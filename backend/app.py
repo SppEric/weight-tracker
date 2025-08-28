@@ -157,7 +157,7 @@ def get_insights():
 
     # Grab the weight entires for the user
     cursor.execute(
-        'SELECT weight, entry_date FROM weights WHERE user_id = ? ORDER BY entry_date DESC', 
+        'SELECT weight, entry_date FROM weights WHERE user_id = ? ORDER BY entry_date ASC', 
         (user_id,)
     )
     rows = cursor.fetchall()
