@@ -2,6 +2,7 @@ import sqlite3
 from flask import Flask, request, jsonify
 from datetime import date
 from flask_cors import CORS
+from insights import calculate_insights
 
 app = Flask(__name__)
 CORS(app)
@@ -103,3 +104,46 @@ def get_weights():
 
     weights = [{'weight': row['weight'], 'entry_date': row['entry_date']} for row in rows]
     return jsonify(weights), 200
+
+@app.get('/insights')
+def get_insights():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'user_id is required'}), 400
+    try:
+        user_id = int(user_id)
+
+        # TODO: Check if user exists
+    
+    except ValueError:
+        return jsonify({'error': 'Invalid user_id'}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Grab the user's goal weight
+    cursor.execute(
+        'SELECT goal_weight FROM users WHERE id = ?', 
+        (user_id,)
+    )
+    row = cursor.fetchone()
+    if not row:
+        return jsonify({'error': 'User not found'}), 404
+    goal_weight = row['goal_weight']
+
+    # Grab the weight entires for the user
+    cursor.execute(
+        'SELECT weight, entry_date FROM weights WHERE user_id = ? ORDER BY entry_date DESC', 
+        (user_id,)
+    )
+    rows = cursor.fetchall()
+    weights = [{'weight': row['weight'], 'entry_date': row['entry_date']} for row in rows]
+    
+    # Pass info to the insights function
+    calculate_insights(weights, goal_weight)
+    insights = calculate_insights([w['weight'] for w in weights], goal_weight)
+    return jsonify(insights), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
