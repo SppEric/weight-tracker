@@ -42,4 +42,61 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-print(get_db().execute('SELECT * FROM users').fetchall())
+######################## Flask Routes ##########################
+@app.post('/weights')
+def add_weight():
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Invalid input'}), 400
+
+    # These are unsafe! Can add validation later
+    # TODO: Add authentication
+    user_id = data.get('user_id')
+    weight = data.get('weight')
+
+    try:
+        user_id = int(user_id)
+        weight = float(weight)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'entered types are innacurate'}), 400
+    
+    # Everything looks good, so get the date and then add to the db
+    entry_date = date.today().isoformat()
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        'INSERT INTO weights (user_id, weight, entry_date) VALUES (?, ?, ?)', 
+        (user_id, weight, entry_date)
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({'message': 'Weight entry added successfully'}), 201
+
+
+@app.get('/weights')
+def get_weights():
+    # Perform query validation
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'user_id is required'}), 400
+
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        return jsonify({'error': 'Invalid user_id'}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Maybe add pagination later if needed
+    cursor.execute(
+        'SELECT weight, entry_date FROM weights WHERE user_id = ? ORDER BY entry_date DESC', 
+        (user_id,)
+    )
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    weights = [{'weight': row['weight'], 'entry_date': row['entry_date']} for row in rows]
+    return jsonify(weights), 200
