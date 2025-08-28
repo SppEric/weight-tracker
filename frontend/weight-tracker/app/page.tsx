@@ -38,7 +38,7 @@ export default function Home() {
   }
   
   useEffect(() => {
-    // Fetch weights on component mount only
+    // Fetch weights and insights on component mount only
     fetchWeights();
     fetchInsights();
   }, []);
