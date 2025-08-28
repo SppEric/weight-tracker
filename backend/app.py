@@ -3,14 +3,29 @@ from flask import Flask, request, jsonify
 from datetime import date
 from flask_cors import CORS
 from insights import calculate_insights
+from dummy_data import DUMMY_WEIGHTS_ERIC
 
 app = Flask(__name__)
 CORS(app)
 app.config['Database'] = 'database.db'
 
+def insert_dummy_weights(cursor):
+    for user_id, weight, entry_date in DUMMY_WEIGHTS_ERIC:
+        cursor.execute(
+            "INSERT INTO weights (user_id, weight, entry_date) VALUES (?, ?, ?)",
+            (user_id, weight, entry_date)
+        )
+
 def init_db():
     conn = sqlite3.connect(app.config['Database'])
     cursor = conn.cursor()
+
+    # THIS SHOULD BE REMOVED IF ACTUALLY RELEASING
+    # Create a fresh testing database
+    drop_users = "DROP TABLE IF EXISTS users"
+    drop_weights = "DROP TABLE IF EXISTS weights"
+    cursor.execute(drop_weights)
+    cursor.execute(drop_users)
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
@@ -32,6 +47,15 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     ''')
+
+    # Insert dummy data for eventual layout when loading frontend
+    cursor.execute(
+            "INSERT INTO users (id, username, password, goal_weight, current_weight) \
+                VALUES (?, ?, ?, ?, ?)", 
+                (1, "Eric", "password", 170, 180)
+        )
+    
+    insert_dummy_weights(cursor)    
 
     conn.commit()
     conn.close()
