@@ -5,10 +5,10 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-DATABASE = 'database.db'
+app.config['Database'] = 'database.db'
 
 def init_db():
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(app.config['Database'])
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -38,7 +38,7 @@ def init_db():
 
 init_db()
 def get_db():
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(app.config['Database'])
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -83,6 +83,9 @@ def get_weights():
 
     try:
         user_id = int(user_id)
+
+        # TODO: Check if user exists
+
     except ValueError:
         return jsonify({'error': 'Invalid user_id'}), 400
 
