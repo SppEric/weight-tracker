@@ -162,10 +162,9 @@ def get_insights():
     )
     rows = cursor.fetchall()
     weights = [{'weight': row['weight'], 'entry_date': row['entry_date']} for row in rows]
-    
+
     # Pass info to the insights function
-    calculate_insights(weights, goal_weight)
-    insights = calculate_insights([w['weight'] for w in weights], goal_weight)
+    insights = calculate_insights(weights, goal_weight)
     return jsonify(insights), 200
 
 if __name__ == '__main__':
