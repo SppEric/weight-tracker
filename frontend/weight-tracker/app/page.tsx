@@ -44,34 +44,38 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
-      <h1>Welcome to Weight Tracker!</h1>
+    <div className="max-w-lg mx-auto mt-8 p-4">
+      <h1 className="text-2xl font-bold mb-4">Weight Tracker</h1>
 
-      <h2> Key Insights </h2>
-      {insights && Object.keys(insights).length > 0 ? (
-        <ul>
-          {Object.entries(insights).map(([key, value]) => (
-            <li key={key}>
-              {key}: {String(value)}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No insights available.</p>
-      )}
-
-      <h2>Your Recent Weights:</h2>
-      {weights.length === 0 ? (
-        <p>No weights logged yet.</p>
-      ) : (
-        <ul>
-          {weights.map((entry: any, index: number) => (
-            <li key={index}>
-              Date: {entry.entry_date}, Weight: {entry.weight} lbs
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">Insights</h2>
+        {Object.keys(insights).length > 0 ? (
+          <ul>
+            {Object.entries(insights).map(([key, value]) => (
+              <li key={key}>
+                {key.replace(/_/g, " ")}: {String(value)}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <span>No insights.</span>
+        )}
       </div>
+
+      <div>
+        <h2 className="text-lg font-semibold mb-2">Recent Weights</h2>
+        {weights.length > 0 ? (
+          <ul>
+            {weights.map((entry: any, idx: number) => (
+              <li key={idx}>
+                {entry.entry_date}: <b>{entry.weight} lbs</b>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <span>No weights logged.</span>
+        )}
+      </div>
+    </div>
   );
 }

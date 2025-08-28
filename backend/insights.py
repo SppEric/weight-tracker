@@ -36,12 +36,12 @@ def calculate_insights(weights_dicts: Dict, goal_weight: float) -> Dict:
         total_weight_change / days_tracked
     
     # Maybe add linear regression model here?
-    projected_days_to_goal = float('inf')
+    projected_days_to_goal = 0
 
     # First make sure that we haven't already reached the goal!
     if (goal_weight - most_recent_weight) < 0:
         projected_days_to_goal = 0
-    elif average_daily_change == 0:
+    elif average_daily_change != 0:
         projected_days_to_goal = (goal_weight - most_recent_weight) / average_daily_change
         
     return {

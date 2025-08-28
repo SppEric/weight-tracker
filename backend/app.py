@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask, request, jsonify
-from datetime import date
+from datetime import datetime
 from flask_cors import CORS
 from insights import calculate_insights
 from dummy_data import DUMMY_WEIGHTS_ERIC
@@ -86,7 +86,11 @@ def add_weight():
         return jsonify({'error': 'entered types are innacurate'}), 400
     
     # Everything looks good, so get the date and then add to the db
-    entry_date = date.today().isoformat()
+    entry_date = datetime.now().isoformat()
+    
+    # Format date into YYYY-MM-DD HH:MM:SS
+    entry_date = entry_date.split('.')[0].replace('T', ' ')
+    entry_date = entry_date[:19]
 
     conn = get_db()
     cursor = conn.cursor()
@@ -119,7 +123,7 @@ def get_weights():
 
     # Maybe add pagination later if needed
     cursor.execute(
-        'SELECT weight, entry_date FROM weights WHERE user_id = ? ORDER BY entry_date ASC', 
+        'SELECT weight, entry_date FROM weights WHERE user_id = ? ORDER BY entry_date DESC', 
         (user_id,)
     )
 
