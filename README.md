@@ -1,7 +1,9 @@
 # weight-tracker
 
 ## How to Run
-This requires two terminals to run! For one terminal, `cd` into `/weight-tracker/backend` and for the other, `cd` into `/weight-tracker/frontend/weight-tracker`. Instructions on how to run each side will be in the respective READMEs.
+This project requires Python and Node.js to run!
+
+To run, use two terminals. For one terminal, `cd` into `/weight-tracker/backend` and for the other, `cd` into `/weight-tracker/frontend/weight-tracker`. Instructions on how to run each side will be in the respective READMEs.
 
 
 ## Time Breakdown:
