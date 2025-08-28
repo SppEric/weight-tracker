@@ -1,7 +1,6 @@
 import pytest
 import sqlite3
-from backend.app import app, get_db, init_db
-from datetime import datetime
+from ..app import app, get_db
 
 def init_db_test():
     conn = sqlite3.connect(app.config['Database'])
@@ -40,7 +39,7 @@ def init_db_test():
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
-    app.config['Database'] = 'test.db'
+    app.config['Database'] = './databases/test.db'
     init_db_test()
 
     with app.test_client() as client:

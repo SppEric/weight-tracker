@@ -2,12 +2,12 @@ import sqlite3
 from flask import Flask, request, jsonify
 from datetime import datetime
 from flask_cors import CORS
-from insights import calculate_insights
-from dummy_data import DUMMY_WEIGHTS_ERIC
+from .insights import calculate_insights
+from .dummy_data import DUMMY_WEIGHTS_ERIC
 
 app = Flask(__name__)
 CORS(app)
-app.config['Database'] = 'database.db'
+app.config['Database'] = './databases/database.db'
 
 def insert_dummy_weights(cursor):
     for user_id, weight, entry_date in DUMMY_WEIGHTS_ERIC:
@@ -60,12 +60,12 @@ def init_db():
     conn.commit()
     conn.close()
 
-
-init_db()
 def get_db():
     conn = sqlite3.connect(app.config['Database'])
     conn.row_factory = sqlite3.Row
     return conn
+
+init_db()
 
 ######################## Flask Routes ##########################
 @app.post('/weights')
